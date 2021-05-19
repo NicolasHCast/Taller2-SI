@@ -1,59 +1,67 @@
-from warnings import resetwarnings
-
-
 class Habitacion:
+    heuristica = int
+
     position = []
+
+    adj = []
     
+    danger = False
+    warning = False
     free = True
 
     wumpus = False
     edor = False
 
-    oro = False
-    resplandor = False
+    gold = False
+    shine = False
 
-    hoyo = False
-    brisa = False
+    hole = False
+    air = False
     
     def __init__(self, pos) -> None:
         self.position = pos
     
     def getInfo(self):
-        info = {
+        return  {
             "pos": self.position,
             "wumpus": self.wumpus,
             "edor" : self.edor,
-            "oro" : self.oro,
-            "resplandor" : self.resplandor,
-            "hoyo" : self.hoyo,
-            "brisa" : self.brisa,
-            'free': self.free
+            "gold" : self.gold,
+            "shine" : self.shine,
+            "hole" : self.hole,
+            "air" : self.air,
+            'free': self.free,
+            "danger": self.danger,
+            "warning": self.warning,
+            "heuristica": self.heuristica,
+            "adj": self.adj
         }
-        return info 
+        
     
     def setType(self, arg, mapa):
-        if(arg == 'WUMPUS'):
+        if(arg == 'W'):
             self.free = False
             self.wumpus = True
             self.addStatus(mapa)
-        elif(arg =='ORO'):
+        elif(arg =='G'):
             self.free = False
-            self.oro = True
+            self.gold = True
+            self.shine = True
             self.addStatus(mapa)
-        elif(arg=='HOYO'):
+        elif(arg=='H'):
             self.free = False
-            self.hoyo = True
+            self.hole = True
             self.addStatus(mapa)
 
     def getType(self):
         if self.wumpus:
-            return "WUMPUS" 
-        elif self.oro:
-            return 'ORO'
-        elif self.hoyo:
-            return 'HOYO'
+            return "W" 
+        elif self.gold:
+            return 'G'
+        elif self.hole:
+            return 'H'
         elif self.free:
-            return 'FREE'
+            return 'F'
 
     def addStatus(self, mapa):
         fila = self.position[0]
@@ -72,25 +80,38 @@ class Habitacion:
                 if(q[0] >= 0 and q[1] >= 0 and q[0] < len(mapa) and q[1] < len(mapa) ):
                     #mapa[q[0]][q[1]]
                     mapa[q[0]][q[1]].setEdor()
-        elif(self.oro):
+        elif(self.hole):
             for q in array:
                 if(q[0] >= 0 and q[1] >= 0 and q[0] < len(mapa) and q[1] < len(mapa) ):
                     #mapa[q[0]][q[1]]
-                    mapa[q[0]][q[1]].setResplandor()
-        elif(self.hoyo):
-            for q in array:
-                if(q[0] >= 0 and q[1] >= 0 and q[0] < len(mapa) and q[1] < len(mapa) ):
-                    #mapa[q[0]][q[1]]
-                    mapa[q[0]][q[1]].setBrisa()
+                    mapa[q[0]][q[1]].setAir()
         else:
             return self
 
     def setEdor(self):
         if(self.edor==False):
             self.edor = True
-    def setResplandor(self):
-        if(self.resplandor==False):
-            self.resplandor = True
-    def setBrisa(self):
-        if(self.brisa==False):
-            self.brisa = True
+        else:
+            self.edor = False
+    def setAir(self):
+        if(self.air==False):
+            self.air = True
+        else:
+            self.air = False
+    def setDanger(self):
+        if(self.danger==False):
+            self.danger = True
+        else:
+            self.danger = False
+        
+    def setWarning(self):
+        if(self.warning==False):
+            self.warning = True
+        else:
+            self.warning = False
+            
+    def setHeuristica(self, heu):
+        self.heuristica = heu
+
+    def setAdj(self, adjs):
+        self.adj = adjs

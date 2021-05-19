@@ -1,21 +1,31 @@
+from habitacion import Habitacion
 class Agente:
+    solucion = []
+
+    memory = []
+
     position = []
-    row = int
-    col = int
-    maxRow = int
 
-    def __init__(self, pos, maxRow):
+    room = Habitacion
+
+    def __init__(self, pos, room):
         self.position = pos
-        self.row = pos[0]
-        self.col = pos[1]
-        self.maxRow = maxRow
-    def movUp(self):
-        if(self.row != 0 or self.row != self.maxRow):
-            print('UP')
-"""
-    def movDown():
+        self.room = room
 
-    def movLeft():
+    def getPos(self):
+        return self.position
 
-    def movRight():
- """
+    def setPos(self, pos):
+        self.position = pos
+    
+    def getRoom(self):
+        return self.room
+
+    def setRoom(self, room):
+        self.room = room
+    
+    def appendMemory(self, info):
+        self.memory.append(info)
+    
+    def setMemory(self, info):
+        print("set memory")

@@ -1,48 +1,70 @@
 from os import closerange
 from habitacion import Habitacion
 import random
+import time
 
 class Mapa:
-    cantFilas = int
-    matriz = []
-    def __init__ (self,cantFilas, cantWumpus, cantOro, cantHoyos):
-        tCells = cantFilas*cantFilas
-        self.cantFilas = cantFilas
-        if(tCells>=cantWumpus+cantHoyos+cantOro):
-            for q in range(4):
-                self.matriz.append([])
-                for w in range(4):
-                    pos = [q,w]
-                    habitacion = Habitacion(pos)
-                    self.matriz[q].append(habitacion)
-            self.setRoom(cantWumpus,"WUMPUS")
-            self.setRoom(cantOro,"ORO")
-            self.setRoom(cantHoyos, "HOYO")
-        else:
-            print("Error")
+    mapa = []
+    heuristica = []
+    def __init__ (self, cantRow, cantWumpus, cantOro, cantHoyos):
+        for q in range(4):
+            self.mapa.append([])
+            for w in range(4):
+                heu = random.randint(1, 15)
+                pos = [q,w]
+                array = []
+                down = [q, w+1]
+                array.append(down)
+                right = [q+1, w]
+                array.append(right)
+
+                habitacion = Habitacion(pos)
+                self.heuristica.append(heu)
+                self.mapa[q].append(habitacion)
+                adjs = []
+                for i in array:
+                    if(i[0] >= 0 and i[1] >= 0 and i[0] < cantRow and i[1] < cantRow ):
+                        adjs.append(i)                        
+                self.mapa[q][w].setAdj(adjs)
+        print("-")
+        self.setRoom(cantWumpus,"W")
+        self.setRoom(cantOro,"G")
+        self.setRoom(cantHoyos, "H")
     def showMap(self):
-        print("------")
-        for q in range(len(self.matriz)):
+        for q in range(len(self.mapa)):
             fila = []
-            for w in range(len(self.matriz)):
-                fila.append(self.matriz[w][q].getType())
-            print(fila)
-        print(self.matriz[0][3].getInfo()['pos'])
+            for w in range(len(self.mapa)):
+                fila.append(self.mapa[w][q].getType())
+            print('\t\t',fila)        
+        print('\n')
 
     def setRoom(self, q, name):
         i = 0
         while(i!=q):
             cell = self.randomCell()
-            if (cell):
-                if(cell.getType()=='FREE'):
-                    cell.setType(name, self.matriz)
-                    i += 1
+            if (cell and cell.getType()=='F'):                
+                cell.setType(name, self.mapa)
+                i += 1
                 
 
     def randomCell(self):        
-        row = random.choice(self.matriz)
+        row = random.choice(self.mapa)
         cell = random.choice(row)
-        if(cell.getInfo()['pos']!=[0,0]):
+        if(cell.getInfo()['pos']!=[0,0] and cell.getInfo()['pos']!=[1,0] and cell.getInfo()['pos']!=[0,1]):
             return cell
         else:
             return False
+    def getMapa(self):
+        return self.mapa
+
+    def getHeuristica(self):
+        return self.heuristica
+
+    def getCell(self,coor):
+        return self.mapa[coor[0]][coor[1]]
+    
+    def popHeuristica(self):
+        i = self.heuristica[0]
+        #print("------------------------------------------------------return",i,self.heuristica,'\t',len(self.heuristica))
+        self.heuristica.pop(0)
+        return i
