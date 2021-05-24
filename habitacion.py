@@ -1,5 +1,5 @@
 class Habitacion:
-    heuristica = int
+    heuristica = -1
 
     position = []
 
@@ -7,16 +7,20 @@ class Habitacion:
     
     danger = False
     warning = False
+    
     free = True
+    
 
     wumpus = False
-    edor = False
+    stink = False
 
     gold = False
     shine = False
 
     hole = False
     air = False
+
+    type = str
     
     def __init__(self, pos) -> None:
         self.position = pos
@@ -25,7 +29,7 @@ class Habitacion:
         return  {
             "pos": self.position,
             "wumpus": self.wumpus,
-            "edor" : self.edor,
+            "stink" : self.stink,
             "gold" : self.gold,
             "shine" : self.shine,
             "hole" : self.hole,
@@ -51,7 +55,16 @@ class Habitacion:
         elif(arg=='H'):
             self.free = False
             self.hole = True
-            self.addStatus(mapa)
+            self.addStatus(mapa)      
+            
+            #self.addStatus(mapa)
+    
+    def viewAgent(self, type):
+        self.free = False
+        self.gold = False
+        self.wumpus = False
+        self.hole = False
+        self.type = type
 
     def getType(self):
         if self.wumpus:
@@ -62,6 +75,8 @@ class Habitacion:
             return 'H'
         elif self.free:
             return 'F'
+        else:
+            return self.type
 
     def addStatus(self, mapa):
         fila = self.position[0]
@@ -79,39 +94,52 @@ class Habitacion:
             for q in array:
                 if(q[0] >= 0 and q[1] >= 0 and q[0] < len(mapa) and q[1] < len(mapa) ):
                     #mapa[q[0]][q[1]]
-                    mapa[q[0]][q[1]].setEdor()
+                    mapa[q[0]][q[1]].isStink()
         elif(self.hole):
             for q in array:
                 if(q[0] >= 0 and q[1] >= 0 and q[0] < len(mapa) and q[1] < len(mapa) ):
                     #mapa[q[0]][q[1]]
-                    mapa[q[0]][q[1]].setAir()
+                    mapa[q[0]][q[1]].isAir()
         else:
             return self
 
-    def setEdor(self):
-        if(self.edor==False):
-            self.edor = True
-        else:
-            self.edor = False
-    def setAir(self):
-        if(self.air==False):
-            self.air = True
-        else:
-            self.air = False
-    def setDanger(self):
-        if(self.danger==False):
-            self.danger = True
-        else:
-            self.danger = False
+    def isStink(self):
+        self.stink = True
+
+    def getStink(self):
+        return self.stink    
+    
+    def isAir(self):
+        self.air = True
+    
+    def isDanger(self):
+        self.danger = True
         
-    def setWarning(self):
-        if(self.warning==False):
-            self.warning = True
-        else:
-            self.warning = False
+    def isWarning(self):
+        self.warning = True
             
     def setHeuristica(self, heu):
-        self.heuristica = heu
+        if self.heuristica == -1:
+            self.heuristica = heu
+
+    def getHeuristica(self):
+        return self.heuristica
 
     def setAdj(self, adjs):
         self.adj = adjs
+
+    def getAdj(self):
+        return self.adj
+
+    def getPos(self):
+        return self.position
+
+    def shootWumpus(self):
+        if self.wumpus:
+            print("\t\t       SE ESCUCHA UN GRITO (EL WUMPUS MUERE)")
+            self.wumpus = False
+            self.free = True
+            return True
+        else:
+            print("\t\t\tNO SE ESCUCHA NADA")
+            return False
