@@ -47,12 +47,8 @@ class Agente:
         if coor not in self.ok and coor not in self.adjOk and coor not in self.wumpus and coor not in self.holes:
             self.warnign.append(coor)
             self.warnign2.append([coor, info])
-
-            #print("HOLES:",self.holes)
-            #print("WUMPUS",self.wumpus)
             newMap[coor[0]][coor[1]].viewAgent(info)            
-            print("\t\t\t        EN LA CELDA:",coor)#,'\tINFO:', info)
-            #time.sleep(0.5)
+            print("\t\t\t        EN LA CELDA:",coor)
     
     def popWarning(self):
         i = self.warnign[0]
@@ -80,58 +76,50 @@ class Agente:
                 for w in range(len(self.warnign2)):
                     if fc[1][q][0] == self.warnign2[w][0][0] and fc[1][q][1] == self.warnign2[w][0][1]:
                         posDanger = fc[1][q]
-                        #print('\n',fc,'||||', self.warnign2[w])
-                        #rint('\n',fc[1][q],'||||', self.warnign2[w])
-                        #print(len(fc[0]),'||||',len(self.warnign2[w][1]))
                         if len(fc[0])!=len(self.warnign2[w][1]):
-                            #print(len(fc[0])<len(self.warnign2[w][1]))
                             l = str
                             safe2 = False
                             if len(fc[0])<len(self.warnign2[w][1]):
                                 l = fc[0]
-                                #print("FC IS LOWER", l=='S')
                                 if l[0] == 'S':
                                     type2 = 'WUMPUS'
                                 elif l[0] == 'A':
                                     type2 = 'HOLE'
                             else:
                                 l = self.warnign2[w][1]
-                                #print("WR2 IS LOWER", l=='S')                                
                                 if l[0] == 'S':
                                     type2 = 'WUMPUS'
+                                    safe2 = False
                                 elif l[0] == 'A':
+                                    safe2 = False
                                     type2 = 'HOLE'
-                            #break
                         else:
-                            #print(fc,'<------>', self.warnign2[w])
-                            #print(len(fc[0]),'<------>',len(self.warnign2[w][1]))
                             if len(fc[0])==1:
-                                #print(fc[0][0] in self.warnign2[w][1], fc[0] , self.warnign2[w][1], count2)
-                                #print(fc[1],'+++++',self.warnign2[w][0])
-                                #print(self.warnign2.count(fc[0][0]),'\n',self.warnign2[w][1].count(fc[0][0]))
                                 if fc[0][0] != self.warnign2[w][1][0]:
                                     safe = True
                                 else:
                                     count2 += 1
                                 if fc[0][0] in self.warnign2[w][1] and count2 > 1:
-                                    #print("~~~~~~~~~~~~~~~~~~~~~~~~~~~",self.warnign2[w][1],'----',fc[0])
                                     type = '-'
                                     safe = False
-                        #print('\n')
-                if count2 >1 or not safe:
+                if not safe2:
+                    check.append([safe2, posDanger,type2])
+                elif count2 >1 or not safe:
                     if len(fc[0])==1:
                         safe = False
                         if fc[0][0] == 'S':
                             type = 'WUMPUS'
                         elif fc[0][0] == 'A':
                             type = 'HOLE'
-                    check.append([safe,posDanger,type])
-                elif not safe2:
+                    elif len(self.warnign2[w][1][0]) == 1:
+                        if self.warnign2[w][1][0] == 'S':
+                            type = 'WUMPUS'
+                        elif self.warnign2[w][1][0] == 'A':
+                            type = 'HOLE'
+                    check.append([safe, posDanger,type])
+                elif safe:
                     check.clear()
-                    check.append([safe2, posDanger,type2])
-                elif safe:# and type == ' ':
                     check.append([safe2, posDanger])
-        #time.sleep(0.5)
         return check
 
     def getWarning(self):
@@ -172,13 +160,12 @@ class Agente:
 
     def huntWumpus(self, roomWumpus):
         print("\t\t\t\tRECARGANDO ARCO")
-        #time.sleep(0.5)
         if self.arrows > 0:
             print("\t\t\tEL AGENTE DISPARO HACIA LA CELDA", roomWumpus.getPos())
             self.arrows -= 1
             return roomWumpus.shootWumpus()
         else:
-            print("\t\t\tEL AGENTE SE QUEDO SIN FLECHAS POR LO TANTO NO PUEDE SEGUIR")
+            print("\t\        EL AGENTE SE QUEDO SIN FLECHAS POR LO TANTO NO PUEDE SEGUIR")
             return False
     def removeWarning(self, dangerRoom):
         room = dangerRoom.getPos()        
